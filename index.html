@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sorteo">
+<title>Participa y Gana</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --g:#c9a84c;--gd:#7a6230;--d:#0a0a0a;--d2:#141414;--d3:#1c1c1c;--d4:#262626;
+  --t:#f0ece0;--tm:#7a7870;--ok:#3dba6f;--err:#e05252;--warn:#e09c30;--r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%;background:var(--d);color:var(--t);font-family:'DM Sans',sans-serif}
+body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.13) 0,transparent 70%)}
+.app{max-width:480px;margin:0 auto;padding:0 0 60px}
+
+/* HEADER */
+.hdr{text-align:center;padding:44px 24px 28px;position:relative}
+.hdr::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:36px;background:linear-gradient(to bottom,transparent,var(--g))}
+.brand{font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--g);margin-bottom:14px}
+.hdr h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;line-height:1.1}
+.hdr h1 span{color:var(--g)}
+.hdr p{margin-top:10px;font-size:14px;color:var(--tm);line-height:1.6;font-weight:300}
+
+/* STEPS */
+.steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:0 24px 28px}
+.sd{width:8px;height:8px;border-radius:50%;background:var(--d4);transition:all .3s}
+.sd.on{background:var(--g);transform:scale(1.4)}
+.sd.done{background:var(--gd)}
+.sl{flex:1;height:1px;background:var(--d4);max-width:60px}
+.sl.done{background:var(--gd)}
+
+/* CARD */
+.card{margin:0 16px;background:var(--d2);border:1px solid rgba(201,168,76,.14);border-radius:var(--r);padding:24px 20px}
+.sec{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:16px}
+
+/* INPUTS */
+.f{margin-bottom:16px}
+.f label{display:block;font-size:11px;font-weight:500;color:var(--tm);letter-spacing:.4px;margin-bottom:7px}
+.f label .r{color:var(--g)}
+.f input,.f select{width:100%;background:var(--d3);border:1px solid var(--d4);border-radius:9px;padding:13px 14px;font-size:15px;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+.f input:focus,.f select:focus{border-color:var(--g)}
+.f input.err{border-color:var(--err)}
+.f input::placeholder{color:#3a3835}
+
+/* FOTO */
+.foto-z{border:2px dashed var(--d4);border-radius:11px;padding:24px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.foto-z:hover{border-color:var(--g);background:rgba(201,168,76,.03)}
+.foto-z.ok{border-style:solid;border-color:var(--ok)}
+.foto-z input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.foto-ico{font-size:28px;margin-bottom:8px}
+.foto-txt{font-size:13px;color:var(--tm);line-height:1.5}
+.foto-txt strong{color:var(--t);display:block;margin-bottom:3px}
+.foto-prev{margin-top:10px;border-radius:7px;overflow:hidden;max-height:160px}
+.foto-prev img{width:100%;object-fit:cover}
+
+.divider{height:1px;background:var(--d4);margin:20px 0}
+
+/* BOTÓN */
+.btn{width:100%;background:var(--g);color:var(--d);border:none;border-radius:11px;padding:17px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.loading{color:transparent}
+.btn.loading::after{content:'';position:absolute;width:18px;height:18px;border:2px solid var(--d);border-top-color:transparent;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* MENSAJES */
+.msg{margin-top:12px;padding:12px 14px;border-radius:9px;font-size:13px;line-height:1.5;display:none}
+.msg.show{display:block}
+.msg.error{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);color:#ff8080}
+.msg.success{background:rgba(61,186,111,.08);border:1px solid rgba(61,186,111,.3);color:#6de0a0}
+.terms{text-align:center;padding:18px 24px 0;font-size:11px;color:var(--tm);line-height:1.6}
+
+/* PANTALLA ÉXITO */
+.success{display:none;text-align:center;padding:44px 24px}
+.success.show{display:block}
+.tkt{margin:28px auto;max-width:300px;background:var(--d2);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:36px 20px;position:relative;overflow:hidden}
+.tkt::before{content:'';position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:200px;height:160px;background:radial-gradient(circle,rgba(201,168,76,.18) 0,transparent 70%);pointer-events:none}
+.tkt-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--tm);margin-bottom:6px}
+.tkt-num{font-family:'Syne',sans-serif;font-size:60px;font-weight:800;color:var(--g);line-height:1;margin-bottom:6px}
+.tkt-name{font-size:15px;color:var(--t);font-weight:500}
+.tkt-date{font-size:12px;color:var(--tm);margin-top:3px}
+.checks{margin:20px 0;display:inline-block;text-align:left}
+.chk-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tm);padding:5px 0}
+.chk-item .c{color:var(--ok);font-size:15px}
+.success h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px}
+
+/* ERROR SCREEN */
+.errscr{display:none;text-align:center;padding:44px 24px}
+.errscr.show{display:block}
+.errscr .ico{font-size:56px;margin-bottom:20px}
+.errscr h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px;color:var(--err)}
+.errscr p{font-size:14px;color:var(--tm);line-height:1.6}
+
+/* VALIDATING */
+.val{text-align:center;padding:60px 24px}
+.spin{width:40px;height:40px;border:2px solid var(--d4);border-top-color:var(--g);border-radius:50%;margin:0 auto 16px;animation:spin .9s linear infinite}
+.val p{color:var(--tm);font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- VALIDANDO -->
+  <div class="val" id="sc-val">
+    <div class="spin"></div>
+    <p>Verificando...</p>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div id="sc-form" style="display:none">
+    <div class="hdr">
+      <div class="brand">Promoción Exclusiva</div>
+      <h1>Regístrate y <span>Gana</span></h1>
+      <p>Llena tus datos con la información de tu factura de compra.</p>
+    </div>
+    <div class="steps">
+      <div class="sd on" id="d1"></div>
+      <div class="sl" id="l1"></div>
+      <div class="sd" id="d2"></div>
+      <div class="sl" id="l2"></div>
+      <div class="sd" id="d3"></div>
+    </div>
+    <div class="card">
+      <div class="sec">Tus datos</div>
+      <div class="f">
+        <label>Nombre y apellido <span class="r">*</span></label>
+        <input type="text" id="nombre" placeholder="Como aparece en tu cédula" autocomplete="name">
+      </div>
+      <div class="f">
+        <label>Cédula / DNI <span class="r">*</span></label>
+        <input type="text" id="cedula" placeholder="Número de identificación" inputmode="numeric">
+      </div>
+      <div class="f">
+        <label>Teléfono celular <span class="r">*</span></label>
+        <input type="tel" id="telefono" placeholder="+57 300 000 0000" autocomplete="tel">
+      </div>
+
+      <div class="divider"></div>
+      <div class="sec">Datos de la compra</div>
+
+      <div class="f">
+        <label>Establecimiento donde compraste <span class="r">*</span></label>
+        <input type="text" id="establecimiento" placeholder="Nombre del local o tienda">
+      </div>
+      <div class="f">
+        <label>Número de factura <span class="r">*</span></label>
+        <input type="text" id="factura" placeholder="Ej: FAC-2025-00123" autocomplete="off">
+      </div>
+
+      <div class="divider"></div>
+      <div class="sec">Foto de la factura</div>
+      <p style="font-size:12px;color:var(--tm);margin-bottom:14px;line-height:1.5">Sube una foto clara de tu factura o recibo de compra. Es obligatoria para validar tu participación.</p>
+
+      <div class="foto-z" id="fz">
+        <input type="file" id="foto-input" accept="image/*" capture="environment">
+        <div class="foto-ico" id="fz-ico">📷</div>
+        <div class="foto-txt">
+          <strong id="fz-lbl">Tomar foto o elegir de galería</strong>
+          JPG, PNG — máx. 5MB
+        </div>
+        <div class="foto-prev" id="fprev" style="display:none"><img id="fimg" src="" alt=""></div>
+      </div>
+
+      <div class="msg" id="fmsg"></div>
+      <div class="divider"></div>
+      <button class="btn" id="btn-sub" onclick="enviar()">Registrarme al sorteo</button>
+    </div>
+    <div class="terms">Al participar aceptas los términos de la promoción.<br>Necesitas al menos un dato diferente para registrar una nueva participación.</div>
+  </div>
+
+  <!-- ÉXITO -->
+  <div class="success" id="sc-ok">
+    <div class="hdr">
+      <div class="brand">¡Registro exitoso!</div>
+      <h2>¡Estás en el<br>sorteo! 🎉</h2>
+      <p>Tus datos fueron guardados. Este es tu número de ticket:</p>
+    </div>
+    <div class="tkt">
+      <div class="tkt-lbl">Tu número de ticket</div>
+      <div class="tkt-num" id="tnum">—</div>
+      <div class="tkt-name" id="tname">—</div>
+      <div class="tkt-date" id="tdate">—</div>
+    </div>
+    <div class="checks">
+      <div class="chk-item"><span class="c">✓</span> Nombre y cédula registrados</div>
+      <div class="chk-item"><span class="c">✓</span> Número de factura guardado</div>
+      <div class="chk-item"><span class="c">✓</span> Foto de factura subida</div>
+      <div class="chk-item"><span class="c">✓</span> Ticket asignado</div>
+    </div>
+    <p style="font-size:12px;color:var(--tm);padding:0 20px;line-height:1.7">📌 <strong style="color:var(--t)">Guarda este número.</strong><br>Si ganas, te contactaremos al teléfono registrado.</p>
+  </div>
+
+  <!-- ERROR -->
+  <div class="errscr" id="sc-err">
+    <div class="ico">⛔</div>
+    <h2 id="err-title">No se pudo registrar</h2>
+    <p id="err-desc">Intenta de nuevo.</p>
+    <br>
+    <button class="btn" style="max-width:200px;margin:0 auto;display:block" onclick="location.reload()">Reintentar</button>
+  </div>
+</div>
+
+<script>
+const SUPA_URL = 'https://TU_PROYECTO.supabase.co';
+const SUPA_KEY = 'TU_ANON_KEY';
+
+let foto = null;
+
+// ── INIT ──────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Foto listener
+  document.getElementById('foto-input').addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (f.size > 5*1024*1024) { showMsg('La foto no puede pesar más de 5MB.','error'); return; }
+    foto = f;
+    const r = new FileReader();
+    r.onload = ev => {
+      document.getElementById('fimg').src = ev.target.result;
+      document.getElementById('fprev').style.display = 'block';
+      document.getElementById('fz').classList.add('ok');
+      document.getElementById('fz-ico').textContent = '✅';
+      document.getElementById('fz-lbl').textContent = 'Foto lista';
+    };
+    r.readAsDataURL(f);
+  });
+
+  // El formulario no requiere código QR — va directo
+  show('form');
+});
+
+// ── ENVIAR ────────────────────────────────────────────────────
+async function enviar() {
+  const nombre         = val('nombre');
+  const cedula         = val('cedula');
+  const telefono       = val('telefono');
+  const establecimiento = val('establecimiento');
+  const factura        = val('factura');
+
+  if (nombre.length < 3)   { showMsg('Ingresa tu nombre completo.','error'); mark('nombre'); return; }
+  if (cedula.length < 4)   { showMsg('Ingresa tu cédula o DNI.','error'); mark('cedula'); return; }
+  if (telefono.length < 7) { showMsg('Ingresa un teléfono válido.','error'); mark('telefono'); return; }
+  if (!establecimiento)    { showMsg('Indica el establecimiento donde compraste.','error'); mark('establecimiento'); return; }
+  if (!factura)            { showMsg('Ingresa el número de factura.','error'); mark('factura'); return; }
+  if (!foto)               { showMsg('Debes subir una foto de tu factura.','error'); return; }
+
+  step(2);
+  const btn = document.getElementById('btn-sub');
+  btn.disabled = true; btn.classList.add('loading'); hideMsg();
+
+  try {
+    // 1. Subir foto
+    const ext   = foto.name.split('.').pop() || 'jpg';
+    const path  = `recibos/${cedula}_${Date.now()}.${ext}`;
+    const up = await fetch(`${SUPA_URL}/storage/v1/object/${path}`, {
+      method:'POST',
+      headers:{ apikey:SUPA_KEY, Authorization:`Bearer ${SUPA_KEY}`, 'Content-Type':foto.type, 'x-upsert':'false' },
+      body: foto
+    });
+    if (!up.ok) throw new Error('No se pudo subir la foto. Verifica tu conexión.');
+    const fotoUrl = `${SUPA_URL}/storage/v1/object/public/${path}`;
+
+    step(3);
+
+    // 2. Registrar ticket (función atómica con anti-duplicado)
+    const res = await fetch(`${SUPA_URL}/rest/v1/rpc/registrar_ticket`, {
+      method:'POST',
+      headers:{ apikey:SUPA_KEY, Authorization:`Bearer ${SUPA_KEY}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        p_nombre: nombre, p_cedula: cedula, p_telefono: telefono,
+        p_establecimiento: establecimiento, p_factura: factura,
+        p_foto_url: fotoUrl, p_foto_path: path,
+        p_codigo_qr: new URLSearchParams(location.search).get('codigo') || null,
+        p_user_agent: navigator.userAgent
+      })
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+      const msgs = {
+        'DUPLICADO':'Ya existe un registro con estos datos. Al menos un campo debe ser diferente para participar de nuevo.',
+        'QR_INVALIDO':'El código QR no es válido.'
+      };
+      showErrScr(msgs[data.error] || data.mensaje || 'Error al registrar.');
+      return;
+    }
+
+    document.getElementById('tnum').textContent = data.numero_ticket;
+    document.getElementById('tname').textContent = nombre;
+    document.getElementById('tdate').textContent = new Date().toLocaleDateString('es',{day:'2-digit',month:'long',year:'numeric'});
+    show('ok');
+
+  } catch(e) {
+    showMsg('Error de conexión: ' + e.message, 'error');
+    btn.disabled = false; btn.classList.remove('loading'); step(1);
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────────────
+const val  = id => document.getElementById(id)?.value.trim() || '';
+const mark = id => { const e=document.getElementById(id); if(e){e.classList.add('err');e.focus()} };
+const show = name => {
+  ['val','form','ok','err'].forEach(s => {
+    const el = document.getElementById('sc-'+s);
+    if(el) el.style.display = s===name?'block':'none';
+  });
+};
+function showMsg(t,type){ const e=document.getElementById('fmsg'); e.textContent=t; e.className='msg show '+type; }
+function hideMsg(){ document.getElementById('fmsg').className='msg'; }
+function showErrScr(msg){
+  document.getElementById('err-title').textContent = 'No se pudo registrar';
+  document.getElementById('err-desc').textContent = msg;
+  show('err');
+}
+function step(n){
+  for(let i=1;i<=3;i++){
+    const d=document.getElementById('d'+i);
+    if(d) d.className='sd'+(i<n?' done':i===n?' on':'');
+  }
+  for(let i=1;i<=2;i++){
+    const l=document.getElementById('l'+i);
+    if(l) l.className='sl'+(i<n?' done':'');
+  }
+}
+document.addEventListener('input',e=>e.target.classList.remove('err'));
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
