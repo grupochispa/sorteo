@@ -3,103 +3,204 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#1b3a6b">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sorteo">
-<title>Participa y Gana</title>
+<meta name="apple-mobile-web-app-title" content="Gran Marques Sorteo">
+<title>Gran Marques — Participa y Gana</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --g:#c9a84c;--gd:#7a6230;--d:#0a0a0a;--d2:#141414;--d3:#1c1c1c;--d4:#262626;
-  --t:#f0ece0;--tm:#7a7870;--ok:#3dba6f;--err:#e05252;--warn:#e09c30;--r:14px;
+  /* Gran Marques — azul marino + dorado */
+  --blue:  #1b3a6b;   /* azul marino principal */
+  --blue2: #24508f;   /* azul medio */
+  --blue3: #2d6ab4;   /* azul claro */
+  --bluebg:#eef3fa;   /* fondo muy claro */
+  --gold:  #c9a030;   /* dorado logo */
+  --goldd: #a07820;   /* dorado oscuro */
+  --goldbg:rgba(201,160,48,.1);
+  --t:     #1a2a40;   /* texto oscuro */
+  --tm:    #5a7090;   /* texto muted */
+  --surf:  #ffffff;   /* superficie blanca */
+  --surf2: #f4f7fc;   /* superficie gris-azul */
+  --bord:  #d0daea;
+  --ok:    #2e9e60;
+  --err:   #d94040;
+  --r:     14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{min-height:100%;background:var(--d);color:var(--t);font-family:'DM Sans',sans-serif}
-body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.13) 0,transparent 70%)}
+html,body{min-height:100%;background:var(--bluebg);color:var(--t);font-family:'Open Sans',sans-serif}
+
+/* fondo con granos de arroz decorativos via SVG inline */
+body{
+  background-color:var(--bluebg);
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0,rgba(27,58,107,.08) 0,transparent 70%);
+}
+
 .app{max-width:480px;margin:0 auto;padding:0 0 60px}
 
-/* HEADER */
-.hdr{text-align:center;padding:44px 24px 28px;position:relative}
-.hdr::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:1px;height:36px;background:linear-gradient(to bottom,transparent,var(--g))}
-.brand{font-size:10px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--g);margin-bottom:14px}
-.hdr h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;line-height:1.1}
-.hdr h1 span{color:var(--g)}
-.hdr p{margin-top:10px;font-size:14px;color:var(--tm);line-height:1.6;font-weight:300}
+/* HERO HEADER — azul marino */
+.hero{
+  background:var(--blue);
+  padding:0 0 28px;
+  position:relative;
+  overflow:hidden;
+}
+.hero::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;
+  background:var(--bluebg);
+  clip-path:ellipse(55% 100% at 50% 100%);
+}
+/* ola decorativa dorada */
+.hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--gold),#e8c050,var(--gold));
+}
+
+.logo-wrap{text-align:center;padding:28px 24px 16px}
+/* Logo SVG inline — caballero + letras Gran Marques */
+.logo-svg{width:160px;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 2px 8px rgba(0,0,0,.3))}
+
+.hero-tagline{
+  text-align:center;
+  font-family:'Montserrat',sans-serif;
+  font-size:11px;font-weight:700;
+  letter-spacing:3px;text-transform:uppercase;
+  color:var(--gold);margin-bottom:6px;
+}
+.hero h1{
+  text-align:center;
+  font-family:'Montserrat',sans-serif;
+  font-size:28px;font-weight:900;line-height:1.15;
+  color:#fff;padding:0 24px;
+}
+.hero h1 span{color:var(--gold)}
+.hero-sub{
+  text-align:center;font-size:13px;
+  color:rgba(255,255,255,.7);line-height:1.6;
+  padding:10px 28px 0;font-weight:300;
+}
+
+/* ARROZ BADGE */
+.arroz-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:5px 14px;
+  font-size:11px;color:rgba(255,255,255,.85);
+  letter-spacing:.5px;margin:12px auto 0;
+  display:flex;width:fit-content;margin:12px auto 0;
+}
+.arroz-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
 
 /* STEPS */
-.steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:0 24px 28px}
-.sd{width:8px;height:8px;border-radius:50%;background:var(--d4);transition:all .3s}
-.sd.on{background:var(--g);transform:scale(1.4)}
-.sd.done{background:var(--gd)}
-.sl{flex:1;height:1px;background:var(--d4);max-width:60px}
-.sl.done{background:var(--gd)}
+.steps{display:flex;justify-content:center;align-items:center;gap:6px;padding:20px 24px}
+.sd{width:9px;height:9px;border-radius:50%;background:var(--bord);transition:all .3s}
+.sd.on{background:var(--blue);transform:scale(1.4)}
+.sd.done{background:var(--blue3)}
+.sl{flex:1;height:1px;background:var(--bord);max-width:60px}
+.sl.done{background:var(--blue3)}
 
 /* CARD */
-.card{margin:0 16px;background:var(--d2);border:1px solid rgba(201,168,76,.14);border-radius:var(--r);padding:24px 20px}
-.sec{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--g);margin-bottom:16px}
+.card{margin:0 14px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:24px 20px;box-shadow:0 2px 12px rgba(27,58,107,.07)}
+.sec{
+  font-family:'Montserrat',sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--blue);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.sec::after{content:'';flex:1;height:1px;background:var(--bord)}
 
 /* INPUTS */
-.f{margin-bottom:16px}
-.f label{display:block;font-size:11px;font-weight:500;color:var(--tm);letter-spacing:.4px;margin-bottom:7px}
-.f label .r{color:var(--g)}
-.f input,.f select{width:100%;background:var(--d3);border:1px solid var(--d4);border-radius:9px;padding:13px 14px;font-size:15px;color:var(--t);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
-.f input:focus,.f select:focus{border-color:var(--g)}
+.f{margin-bottom:15px}
+.f label{display:block;font-size:11px;font-weight:600;color:var(--tm);letter-spacing:.3px;margin-bottom:6px}
+.f label .r{color:var(--err)}
+.f input,.f select{
+  width:100%;background:var(--surf2);border:1.5px solid var(--bord);
+  border-radius:9px;padding:12px 14px;font-size:14px;color:var(--t);
+  font-family:'Open Sans',sans-serif;outline:none;transition:border-color .2s,background .2s;
+  -webkit-appearance:none;
+}
+.f input:focus,.f select:focus{border-color:var(--blue);background:#fff}
 .f input.err{border-color:var(--err)}
-.f input::placeholder{color:#3a3835}
+.f input::placeholder{color:#b0bcc8}
 
 /* FOTO */
-.foto-z{border:2px dashed var(--d4);border-radius:11px;padding:24px 18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-.foto-z:hover{border-color:var(--g);background:rgba(201,168,76,.03)}
-.foto-z.ok{border-style:solid;border-color:var(--ok)}
+.foto-z{border:2px dashed var(--bord);border-radius:11px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:var(--surf2)}
+.foto-z:hover{border-color:var(--blue);background:rgba(27,58,107,.04)}
+.foto-z.ok{border-style:solid;border-color:var(--ok);background:rgba(46,158,96,.04)}
 .foto-z input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .foto-ico{font-size:28px;margin-bottom:8px}
 .foto-txt{font-size:13px;color:var(--tm);line-height:1.5}
-.foto-txt strong{color:var(--t);display:block;margin-bottom:3px}
+.foto-txt strong{color:var(--t);display:block;margin-bottom:3px;font-weight:600}
 .foto-prev{margin-top:10px;border-radius:7px;overflow:hidden;max-height:160px}
 .foto-prev img{width:100%;object-fit:cover}
 
-.divider{height:1px;background:var(--d4);margin:20px 0}
+.divider{height:1px;background:var(--bord);margin:20px 0}
 
-/* BOTÓN */
-.btn{width:100%;background:var(--g);color:var(--d);border:none;border-radius:11px;padding:17px;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+/* TÉRMINOS CHECKBOX */
+.terms-chk{display:flex;align-items:flex-start;gap:10px;padding:14px 0 4px;cursor:pointer}
+.terms-chk input[type=checkbox]{
+  width:18px;height:18px;flex-shrink:0;accent-color:var(--blue);
+  cursor:pointer;margin-top:1px;
+}
+.terms-chk span{font-size:12px;color:var(--tm);line-height:1.5}
+.terms-chk a{color:var(--blue);text-decoration:underline}
+
+/* BOTÓN PRINCIPAL */
+.btn{
+  width:100%;background:var(--blue);color:#fff;border:none;border-radius:11px;
+  padding:16px;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;
+  letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 16px rgba(27,58,107,.35);
+}
+.btn:hover{background:var(--blue2)}
 .btn:active{transform:scale(.98)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
 .btn.loading{color:transparent}
-.btn.loading::after{content:'';position:absolute;width:18px;height:18px;border:2px solid var(--d);border-top-color:transparent;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:spin .8s linear infinite}
+.btn.loading::after{content:'';position:absolute;width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);animation:spin .8s linear infinite}
 @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 
 /* MENSAJES */
 .msg{margin-top:12px;padding:12px 14px;border-radius:9px;font-size:13px;line-height:1.5;display:none}
 .msg.show{display:block}
-.msg.error{background:rgba(224,82,82,.1);border:1px solid rgba(224,82,82,.3);color:#ff8080}
-.msg.success{background:rgba(61,186,111,.08);border:1px solid rgba(61,186,111,.3);color:#6de0a0}
-.terms{text-align:center;padding:18px 24px 0;font-size:11px;color:var(--tm);line-height:1.6}
+.msg.error{background:rgba(217,64,64,.07);border:1px solid rgba(217,64,64,.3);color:#b03030}
+.msg.success{background:rgba(46,158,96,.07);border:1px solid rgba(46,158,96,.3);color:#1e7a45}
+.foot-note{text-align:center;padding:16px 24px 0;font-size:11px;color:var(--tm);line-height:1.6}
 
 /* PANTALLA ÉXITO */
-.success{display:none;text-align:center;padding:44px 24px}
+.success{display:none;text-align:center;padding:0 0 40px}
 .success.show{display:block}
-.tkt{margin:28px auto;max-width:300px;background:var(--d2);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:36px 20px;position:relative;overflow:hidden}
-.tkt::before{content:'';position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:200px;height:160px;background:radial-gradient(circle,rgba(201,168,76,.18) 0,transparent 70%);pointer-events:none}
-.tkt-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--tm);margin-bottom:6px}
-.tkt-num{font-family:'Syne',sans-serif;font-size:60px;font-weight:800;color:var(--g);line-height:1;margin-bottom:6px}
-.tkt-name{font-size:15px;color:var(--t);font-weight:500}
+.success-hero{background:var(--blue);padding:36px 24px 48px;position:relative;overflow:hidden}
+.success-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;background:var(--bluebg);clip-path:ellipse(55% 100% at 50% 100%)}
+.success-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),#e8c050,var(--gold))}
+.success-hero h2{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;margin-bottom:8px}
+.success-hero p{font-size:14px;color:rgba(255,255,255,.75);line-height:1.6}
+
+.tkt{margin:28px auto;max-width:300px;background:var(--surf);border:2px solid var(--gold);border-radius:18px;padding:32px 20px;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(27,58,107,.15)}
+.tkt::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:200px;height:140px;background:radial-gradient(circle,rgba(201,160,48,.15) 0,transparent 70%);pointer-events:none}
+.tkt-lbl{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--tm);margin-bottom:6px;font-family:'Montserrat',sans-serif;font-weight:700}
+.tkt-num{font-family:'Montserrat',sans-serif;font-size:64px;font-weight:900;color:var(--blue);line-height:1;margin-bottom:6px}
+.tkt-name{font-size:15px;color:var(--t);font-weight:600}
 .tkt-date{font-size:12px;color:var(--tm);margin-top:3px}
+.tkt-brand{font-size:11px;color:var(--gold);font-weight:700;letter-spacing:1px;margin-top:10px;font-family:'Montserrat',sans-serif}
+
 .checks{margin:20px 0;display:inline-block;text-align:left}
 .chk-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tm);padding:5px 0}
 .chk-item .c{color:var(--ok);font-size:15px}
-.success h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:10px}
 
 /* ERROR SCREEN */
 .errscr{display:none;text-align:center;padding:44px 24px}
 .errscr.show{display:block}
 .errscr .ico{font-size:56px;margin-bottom:20px}
-.errscr h2{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px;color:var(--err)}
+.errscr h2{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px;color:var(--err)}
 .errscr p{font-size:14px;color:var(--tm);line-height:1.6}
 
 /* VALIDATING */
 .val{text-align:center;padding:60px 24px}
-.spin{width:40px;height:40px;border:2px solid var(--d4);border-top-color:var(--g);border-radius:50%;margin:0 auto 16px;animation:spin .9s linear infinite}
+.spin{width:40px;height:40px;border:2px solid var(--bord);border-top-color:var(--blue);border-radius:50%;margin:0 auto 16px;animation:spin .9s linear infinite}
 .val p{color:var(--tm);font-size:14px}
 </style>
 </head>
@@ -114,10 +215,38 @@ body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.
 
   <!-- FORMULARIO -->
   <div id="sc-form" style="display:none">
-    <div class="hdr">
-      <div class="brand">Promoción Exclusiva</div>
-      <h1>Regístrate y <span>Gana</span></h1>
-      <p>Llena tus datos con la información de tu factura de compra.</p>
+    <div class="hero">
+      <!-- Logo Gran Marques SVG inline -->
+      <div class="logo-wrap">
+        <svg class="logo-svg" viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg">
+          <!-- Caballero simplificado -->
+          <g transform="translate(95,5)">
+            <!-- cuerpo/capa -->
+            <ellipse cx="18" cy="52" rx="14" ry="20" fill="#c9a030"/>
+            <!-- cabeza -->
+            <circle cx="18" cy="20" r="10" fill="#c9a030"/>
+            <!-- casco -->
+            <rect x="10" y="10" width="16" height="14" rx="3" fill="#1b3a6b"/>
+            <rect x="12" y="17" width="12" height="4" rx="1" fill="#c9a030"/>
+            <!-- espada -->
+            <rect x="26" y="2" width="3" height="38" rx="1" fill="#c9a030"/>
+            <rect x="20" y="18" width="15" height="3" rx="1" fill="#c9a030"/>
+          </g>
+          <!-- Texto GRAN MARQUES -->
+          <text x="110" y="78" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="28" font-weight="900" fill="#ffffff" letter-spacing="-0.5">Gran</text>
+          <text x="110" y="105" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="28" font-weight="900" fill="#ffffff" letter-spacing="-0.5">Marques</text>
+          <!-- borde dorado decorativo texto -->
+          <text x="110" y="78" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="28" font-weight="900" fill="none" stroke="#c9a030" stroke-width="0.8" letter-spacing="-0.5">Gran</text>
+          <text x="110" y="105" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="28" font-weight="900" fill="none" stroke="#c9a030" stroke-width="0.8" letter-spacing="-0.5">Marques</text>
+        </svg>
+      </div>
+      <div class="hero-tagline">Arrocera Chispa — Promoción 2025</div>
+      <h1>¡Compra, Regístrate<br>y <span>Gana!</span></h1>
+      <p class="hero-sub">Compra tu Arroz Gran Marques, guarda tu factura y participa en el gran sorteo.</p>
+      <div class="arroz-badge">
+        <span class="dot"></span>
+        Arroz Gran Marques — 100% Venezuela
+      </div>
     </div>
     <div class="steps">
       <div class="sd on" id="d1"></div>
@@ -127,7 +256,7 @@ body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.
       <div class="sd" id="d3"></div>
     </div>
     <div class="card">
-      <div class="sec">Tus datos</div>
+      <div class="sec">Tus datos personales</div>
       <div class="f">
         <label>Nombre y apellido <span class="r">*</span></label>
         <input type="text" id="nombre" placeholder="Como aparece en tu cédula" autocomplete="name">
@@ -138,11 +267,11 @@ body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.
       </div>
       <div class="f">
         <label>Teléfono celular <span class="r">*</span></label>
-        <input type="tel" id="telefono" placeholder="+57 300 000 0000" autocomplete="tel">
+        <input type="tel" id="telefono" placeholder="+58 414 000 0000" autocomplete="tel">
       </div>
 
       <div class="divider"></div>
-      <div class="sec">Datos de la compra</div>
+      <div class="sec">Datos de tu compra</div>
 
       <div class="f">
         <label>Establecimiento donde compraste <span class="r">*</span></label>
@@ -155,7 +284,7 @@ body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.
 
       <div class="divider"></div>
       <div class="sec">Foto de la factura</div>
-      <p style="font-size:12px;color:var(--tm);margin-bottom:14px;line-height:1.5">Sube una foto clara de tu factura o recibo de compra. Es obligatoria para validar tu participación.</p>
+      <p style="font-size:12px;color:var(--tm);margin-bottom:14px;line-height:1.5">Sube una foto clara de tu factura o recibo de compra de <strong style="color:var(--blue)">Arroz Gran Marques</strong>. Es obligatoria para validar tu participación.</p>
 
       <div class="foto-z" id="fz">
         <input type="file" id="foto-input" accept="image/*" capture="environment">
@@ -169,31 +298,48 @@ body{background-image:radial-gradient(ellipse 60% 30% at 50% 0,rgba(201,168,76,.
 
       <div class="msg" id="fmsg"></div>
       <div class="divider"></div>
-      <button class="btn" id="btn-sub" onclick="enviar()">Registrarme al sorteo</button>
+
+      <!-- TÉRMINOS Y CONDICIONES -->
+      <label class="terms-chk">
+        <input type="checkbox" id="chk-terms">
+        <span>Acepto los <a href="#" onclick="return false">términos y condiciones</a> de la promoción de <strong>Arrocera Chispa</strong> y autorizo el uso de mis datos para fines del sorteo.</span>
+      </label>
+
+      <div style="margin-top:16px">
+        <button class="btn" id="btn-sub" onclick="enviar()">
+          🌾 &nbsp; Registrarme al sorteo
+        </button>
+      </div>
     </div>
-    <div class="terms">Al participar aceptas los términos de la promoción.<br>Necesitas al menos un dato diferente para registrar una nueva participación.</div>
+    <div class="foot-note">
+      Promoción válida para compradores de <strong>Arroz Gran Marques</strong>.<br>
+      Al menos un dato debe ser diferente para registrar una nueva participación.
+    </div>
   </div>
 
   <!-- ÉXITO -->
   <div class="success" id="sc-ok">
-    <div class="hdr">
-      <div class="brand">¡Registro exitoso!</div>
-      <h2>¡Estás en el<br>sorteo! 🎉</h2>
-      <p>Tus datos fueron guardados. Este es tu número de ticket:</p>
+    <div class="success-hero">
+      <h2>¡Estás en el sorteo! 🎉</h2>
+      <p>Tus datos fueron guardados exitosamente.<br>Este es tu número de ticket:</p>
     </div>
+    <div style="padding:0 16px">
     <div class="tkt">
       <div class="tkt-lbl">Tu número de ticket</div>
       <div class="tkt-num" id="tnum">—</div>
       <div class="tkt-name" id="tname">—</div>
       <div class="tkt-date" id="tdate">—</div>
+      <div class="tkt-brand">🌾 Arroz Gran Marques</div>
     </div>
     <div class="checks">
       <div class="chk-item"><span class="c">✓</span> Nombre y cédula registrados</div>
       <div class="chk-item"><span class="c">✓</span> Número de factura guardado</div>
       <div class="chk-item"><span class="c">✓</span> Foto de factura subida</div>
+      <div class="chk-item"><span class="c">✓</span> Términos aceptados</div>
       <div class="chk-item"><span class="c">✓</span> Ticket asignado</div>
     </div>
-    <p style="font-size:12px;color:var(--tm);padding:0 20px;line-height:1.7">📌 <strong style="color:var(--t)">Guarda este número.</strong><br>Si ganas, te contactaremos al teléfono registrado.</p>
+    <p style="font-size:12px;color:var(--tm);line-height:1.7">📌 <strong style="color:var(--t)">Guarda tu número de ticket.</strong><br>Si ganas, te contactaremos al teléfono registrado. El sorteo se realiza al finalizar la promoción de <strong>Arrocera Chispa</strong>.</p>
+    </div>
   </div>
 
   <!-- ERROR -->
@@ -249,6 +395,9 @@ async function enviar() {
   if (!establecimiento)    { showMsg('Indica el establecimiento donde compraste.','error'); mark('establecimiento'); return; }
   if (!factura)            { showMsg('Ingresa el número de factura.','error'); mark('factura'); return; }
   if (!foto)               { showMsg('Debes subir una foto de tu factura.','error'); return; }
+  if (!document.getElementById('chk-terms').checked) {
+    showMsg('Debes aceptar los términos y condiciones de Arrocera Chispa para participar.','error'); return;
+  }
 
   step(2);
   const btn = document.getElementById('btn-sub');
