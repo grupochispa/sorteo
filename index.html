@@ -243,7 +243,7 @@ body{
           <text x="110" y="105" text-anchor="middle" font-family="'Montserrat',sans-serif" font-size="28" font-weight="900" fill="none" stroke="#c9a030" stroke-width="0.8" letter-spacing="-0.5">Marques</text>
         </svg>
       </div>
-      <div class="hero-tagline">Arrocera Chispa — Promoción 2025</div>
+      <div class="hero-tagline">Arrocera Chispa — Promoción 2026</div>
       <h1>¡Compra, Regístrate<br>y <span>Gana!</span></h1>
       <p class="hero-sub">Compra tu Arroz Gran Marques, guarda tu factura y participa en el gran sorteo.</p>
       <div class="arroz-badge">
@@ -279,6 +279,20 @@ body{
       <div class="f">
         <label>Establecimiento donde compraste <span class="r">*</span></label>
         <input type="text" id="establecimiento" placeholder="Nombre del local o tienda">
+      </div>
+      <div class="f">
+        <label>Estado / Ciudad del comercio <span class="r">*</span></label>
+        <select id="estado_comercio" style="-webkit-appearance:none">
+          <option value="">— Selecciona el estado —</option>
+          <option>Amazonas</option><option>Anzoátegui</option><option>Apure</option>
+          <option>Aragua</option><option>Barinas</option><option>Bolívar</option>
+          <option>Carabobo</option><option>Cojedes</option><option>Delta Amacuro</option>
+          <option>Distrito Capital</option><option>Falcón</option><option>Guárico</option>
+          <option>Lara</option><option>Mérida</option><option>Miranda</option>
+          <option>Monagas</option><option>Nueva Esparta</option><option>Portuguesa</option>
+          <option>Sucre</option><option>Táchira</option><option>Trujillo</option>
+          <option>La Guaira</option><option>Yaracuy</option><option>Zulia</option>
+        </select>
       </div>
       <div class="f">
         <label>Número de factura <span class="r">*</span></label>
@@ -455,6 +469,7 @@ async function enviar() {
   const cedula          = val('cedula');
   const telefono        = val('telefono');
   const establecimiento = val('establecimiento');
+  const estado_comercio = val('estado_comercio');
   const factura         = val('factura');
   const cpaq1           = val('cpaq1');
   const cpaq2           = val('cpaq2');
@@ -464,6 +479,7 @@ async function enviar() {
   if (cedula.length < 4)   { showMsg('Ingresa tu cédula o DNI.','error'); mark('cedula'); return; }
   if (telefono.length < 7) { showMsg('Ingresa un teléfono válido.','error'); mark('telefono'); return; }
   if (!establecimiento)    { showMsg('Indica el establecimiento.','error'); mark('establecimiento'); return; }
+  if (!estado_comercio)    { showMsg('Selecciona el estado o ciudad del comercio.','error'); mark('estado_comercio'); return; }
   if (!factura)            { showMsg('Ingresa el número de factura.','error'); mark('factura'); return; }
 
   // Validar 3 códigos de paquete
@@ -507,7 +523,8 @@ async function enviar() {
         p_foto_url: fotoUrl, p_foto_path: path,
         p_codigo_qr: new URLSearchParams(location.search).get('codigo') || null,
         p_user_agent: navigator.userAgent,
-        p_codigo_paq1: cpaq1, p_codigo_paq2: cpaq2, p_codigo_paq3: cpaq3
+        p_codigo_paq1: cpaq1, p_codigo_paq2: cpaq2, p_codigo_paq3: cpaq3,
+        p_estado_comercio: estado_comercio
       })
     });
     const data = await res.json();
