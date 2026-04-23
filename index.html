@@ -198,6 +198,9 @@ body{
 .errscr h2{font-family:'Montserrat',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px;color:var(--err)}
 .errscr p{font-size:14px;color:var(--tm);line-height:1.6}
 
+.cod-hint{font-size:11px;margin-top:4px;min-height:16px;padding-left:2px}
+.cod-hint.ok{color:var(--ok)}.cod-hint.err{color:var(--err)}
+
 /* VALIDATING */
 .val{text-align:center;padding:60px 24px}
 .spin{width:40px;height:40px;border:2px solid var(--bord);border-top-color:var(--blue);border-radius:50%;margin:0 auto 16px;animation:spin .9s linear infinite}
@@ -283,6 +286,31 @@ body{
       </div>
 
       <div class="divider"></div>
+      <div class="sec">Códigos de paquetes</div>
+
+      <div style="background:rgba(27,58,107,.06);border:1px solid var(--bord);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:var(--tm);line-height:1.6">
+        📦 <strong style="color:var(--blue)">Mínimo 3 paquetes de Arroz Gran Marques.</strong><br>
+        Ingresa el código impreso en cada paquete. El código corresponde a la <strong>fecha y hora de producción</strong>.<br>
+        <span style="font-family:monospace;font-size:13px;color:var(--blue);font-weight:700">Ejemplo: 14 01 26 11:13 → 1401261113</span>
+      </div>
+
+      <div class="f">
+        <label>Código paquete 1 <span class="r">*</span></label>
+        <input type="text" id="cpaq1" placeholder="Ej: 1401261113" inputmode="numeric" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')">
+        <div class="cod-hint" id="hint1"></div>
+      </div>
+      <div class="f">
+        <label>Código paquete 2 <span class="r">*</span></label>
+        <input type="text" id="cpaq2" placeholder="Ej: 1401261520" inputmode="numeric" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')">
+        <div class="cod-hint" id="hint2"></div>
+      </div>
+      <div class="f">
+        <label>Código paquete 3 <span class="r">*</span></label>
+        <input type="text" id="cpaq3" placeholder="Ej: 1401261822" inputmode="numeric" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')">
+        <div class="cod-hint" id="hint3"></div>
+      </div>
+
+      <div class="divider"></div>
       <div class="sec">Foto de la factura</div>
       <p style="font-size:12px;color:var(--tm);margin-bottom:14px;line-height:1.5">Sube una foto clara de tu factura o recibo de compra de <strong style="color:var(--blue)">Arroz Gran Marques</strong>. Es obligatoria para validar tu participación.</p>
 
@@ -358,9 +386,47 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 
 let foto = null;
 
-// ── INIT ──────────────────────────────────────────────────────
+// ── VALIDACIÓN CÓDIGO PAQUETE ─────────────────────────────
+// Formato: DDMMYYHHMI (10 dígitos)
+// Ej: 1401261113 = 14-Ene-2026 11:13
+function parseCodigo(cod) {
+  if (!cod || cod.length !== 10) return null;
+  const dd = parseInt(cod.substring(0,2));
+  const mm = parseInt(cod.substring(2,4));
+  const yy = parseInt(cod.substring(4,6));
+  const hh = parseInt(cod.substring(6,8));
+  const mi = parseInt(cod.substring(8,10));
+  if (dd<1||dd>31||mm<1||mm>12||hh>23||mi>59) return null;
+  // Año: 26 → 2026
+  const year = 2000 + yy;
+  const dt = new Date(year, mm-1, dd, hh, mi, 0);
+  if (isNaN(dt.getTime())) return null;
+  return dt;
+}
+
+function validarCodigo(cod) {
+  const dt = parseCodigo(cod);
+  if (!dt) return { ok: false, msg: 'Formato inválido. Debe ser 10 dígitos: DDMMYYHHMI' };
+  const now = new Date();
+  if (dt > now) return { ok: false, msg: 'El código indica una fecha futura. Verifica el número.' };
+  // No más de 1 año atrás (evita códigos muy viejos)
+  const unAñoAtras = new Date(); unAñoAtras.setFullYear(unAñoAtras.getFullYear()-1);
+  if (dt < unAñoAtras) return { ok: false, msg: 'El código es demasiado antiguo.' };
+  return { ok: true, msg: '✓ ' + dt.toLocaleDateString('es',{day:'2-digit',month:'short',year:'numeric'}) + ' ' + String(dt.getHours()).padStart(2,'0') + ':' + String(dt.getMinutes()).padStart(2,'0') };
+}
+
+function onCodigoInput(n) {
+  const cod = document.getElementById('cpaq'+n).value.trim();
+  const hint = document.getElementById('hint'+n);
+  if (cod.length === 0) { hint.textContent=''; hint.className='cod-hint'; return; }
+  if (cod.length < 10) { hint.textContent='Faltan '+(10-cod.length)+' dígitos'; hint.className='cod-hint err'; return; }
+  const r = validarCodigo(cod);
+  hint.textContent = r.msg;
+  hint.className = 'cod-hint ' + (r.ok ? 'ok' : 'err');
+}
+
+// ── INIT ──────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  // Foto listener
   document.getElementById('foto-input').addEventListener('change', e => {
     const f = e.target.files[0];
     if (!f) return;
@@ -376,27 +442,41 @@ window.addEventListener('DOMContentLoaded', () => {
     };
     r.readAsDataURL(f);
   });
-
-  // El formulario no requiere código QR — va directo
+  // Live validation en códigos
+  [1,2,3].forEach(n => {
+    document.getElementById('cpaq'+n).addEventListener('input', () => onCodigoInput(n));
+  });
   show('form');
 });
 
-// ── ENVIAR ────────────────────────────────────────────────────
+// ── ENVIAR ────────────────────────────────────────────────
 async function enviar() {
-  const nombre         = val('nombre');
-  const cedula         = val('cedula');
-  const telefono       = val('telefono');
+  const nombre          = val('nombre');
+  const cedula          = val('cedula');
+  const telefono        = val('telefono');
   const establecimiento = val('establecimiento');
-  const factura        = val('factura');
+  const factura         = val('factura');
+  const cpaq1           = val('cpaq1');
+  const cpaq2           = val('cpaq2');
+  const cpaq3           = val('cpaq3');
 
   if (nombre.length < 3)   { showMsg('Ingresa tu nombre completo.','error'); mark('nombre'); return; }
   if (cedula.length < 4)   { showMsg('Ingresa tu cédula o DNI.','error'); mark('cedula'); return; }
   if (telefono.length < 7) { showMsg('Ingresa un teléfono válido.','error'); mark('telefono'); return; }
-  if (!establecimiento)    { showMsg('Indica el establecimiento donde compraste.','error'); mark('establecimiento'); return; }
+  if (!establecimiento)    { showMsg('Indica el establecimiento.','error'); mark('establecimiento'); return; }
   if (!factura)            { showMsg('Ingresa el número de factura.','error'); mark('factura'); return; }
-  if (!foto)               { showMsg('Debes subir una foto de tu factura.','error'); return; }
+
+  // Validar 3 códigos de paquete
+  for (const [n, cod] of [[1,cpaq1],[2,cpaq2],[3,cpaq3]]) {
+    if (!cod) { showMsg(`Ingresa el código del paquete ${n}.`,'error'); mark('cpaq'+n); return; }
+    if (cod.length !== 10) { showMsg(`El código del paquete ${n} debe tener 10 dígitos.`,'error'); mark('cpaq'+n); return; }
+    const r = validarCodigo(cod);
+    if (!r.ok) { showMsg(`Paquete ${n}: ${r.msg}`,'error'); mark('cpaq'+n); return; }
+  }
+
+  if (!foto) { showMsg('Debes subir una foto de tu factura.','error'); return; }
   if (!document.getElementById('chk-terms').checked) {
-    showMsg('Debes aceptar los términos y condiciones de Arrocera Chispa para participar.','error'); return;
+    showMsg('Debes aceptar los términos y condiciones.','error'); return;
   }
 
   step(2);
@@ -405,19 +485,19 @@ async function enviar() {
 
   try {
     // 1. Subir foto
-    const ext   = foto.name.split('.').pop() || 'jpg';
-    const path  = `recibos/${cedula}_${Date.now()}.${ext}`;
+    const ext  = foto.name.split('.').pop() || 'jpg';
+    const path = `recibos/${cedula}_${Date.now()}.${ext}`;
     const up = await fetch(`${SUPA_URL}/storage/v1/object/${path}`, {
       method:'POST',
       headers:{ apikey:SUPA_KEY, Authorization:`Bearer ${SUPA_KEY}`, 'Content-Type':foto.type, 'x-upsert':'false' },
       body: foto
     });
-    if (!up.ok) throw new Error('No se pudo subir la foto. Verifica tu conexión.');
+    if (!up.ok) throw new Error('No se pudo subir la foto.');
     const fotoUrl = `${SUPA_URL}/storage/v1/object/public/${path}`;
 
     step(3);
 
-    // 2. Registrar ticket (función atómica con anti-duplicado)
+    // 2. Registrar ticket
     const res = await fetch(`${SUPA_URL}/rest/v1/rpc/registrar_ticket`, {
       method:'POST',
       headers:{ apikey:SUPA_KEY, Authorization:`Bearer ${SUPA_KEY}`, 'Content-Type':'application/json' },
@@ -426,14 +506,15 @@ async function enviar() {
         p_establecimiento: establecimiento, p_factura: factura,
         p_foto_url: fotoUrl, p_foto_path: path,
         p_codigo_qr: new URLSearchParams(location.search).get('codigo') || null,
-        p_user_agent: navigator.userAgent
+        p_user_agent: navigator.userAgent,
+        p_codigo_paq1: cpaq1, p_codigo_paq2: cpaq2, p_codigo_paq3: cpaq3
       })
     });
     const data = await res.json();
 
     if (!data.ok) {
       const msgs = {
-        'DUPLICADO':'Ya existe un registro con estos datos. Al menos un campo debe ser diferente para participar de nuevo.',
+        'DUPLICADO':'Ya existe un ticket con estos datos. Al menos un campo debe ser diferente.',
         'QR_INVALIDO':'El código QR no es válido.'
       };
       showErrScr(msgs[data.error] || data.mensaje || 'Error al registrar.');
@@ -451,7 +532,7 @@ async function enviar() {
   }
 }
 
-// ── HELPERS ───────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────────
 const val  = id => document.getElementById(id)?.value.trim() || '';
 const mark = id => { const e=document.getElementById(id); if(e){e.classList.add('err');e.focus()} };
 const show = name => {
@@ -478,7 +559,6 @@ function step(n){
   }
 }
 document.addEventListener('input',e=>e.target.classList.remove('err'));
-
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
